@@ -1,0 +1,25 @@
+{
+  "name": "node-ecommerce",
+  "version": "1.0.0",
+  "description": "This is ecommerce website with Node.js, Express and MongoDB",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gojicmiroslav/node-ecommerce.git"
+  },
+  "keywords": [
+    "node",
+    "ecommerce",
+    "express",
+    "mongodb"
+  ],
+  "author": "Miroslav Gojic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gojicmiroslav/node-ecommerce/issues"
+  },
+  "homepage": "https://github.com/gojicmiroslav/node-ecommerce#readme"
+}
