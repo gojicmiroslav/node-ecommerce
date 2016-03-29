@@ -10,10 +10,10 @@ var cookieParser = require('cookie-parser');
 var flash = require('express-flash');
 
 var User = require('./models/user');
-
+var secret = require('./config/secret');
 var port = process.env.PORT || 3000;
 
-mongoose.connect('mongodb://root:deronje@ds019628.mlab.com:19628/ecommerce_misa', function(err){
+mongoose.connect(secret.database, function(err){
 	if(err) {
 		console.log(err);
 	} else {
@@ -30,7 +30,7 @@ app.use(cookieParser());
 app.use(session({
 	resave: true,
 	saveUninitialized: true,
-	secret: "Miroslav%@#@#$@#"
+	secret: secret.secretKey
 }));
 app.use(flash());
 
