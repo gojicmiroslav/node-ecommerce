@@ -5,6 +5,9 @@ var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var ejs = require('ejs');
 var engine = require('ejs-mate');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
+var flash = require('express-flash');
 
 var User = require('./models/user');
 
@@ -23,30 +26,24 @@ app.use(express.static(__dirname + '/public'));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(session({
+	resave: true,
+	saveUninitialized: true,
+	secret: "Miroslav%@#@#$@#"
+}));
+app.use(flash());
+
+// Engine
 app.engine('ejs', engine);
 app.set('view engine', 'ejs'); 
 
-app.get('/', function(req, res){
-	res.render('./main/home');
-});
+//Route
+var mainRoutes = require('./routes/main');
+var userRoutes = require('./routes/user');
+app.use(mainRoutes);
+app.use(userRoutes);
 
-app.get('/about', function(req, res){
-	res.render('./main/about');
-});
-
-app.post('/create-user', function(req, res, next){
-	var user = new User();
-	user.profile.name = req.body.name;
-	user.email = req.body.email;
-	user.password = req.body.password;
-
-	// user - saved user
-	user.save(function(err, user){
-		if(err) return next(err);
-
-		res.json('Successfully saved user: ' + user);	
-	});
-});
 
 app.listen(port, function(err){
 	if(err) throw err;

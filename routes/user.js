@@ -1,0 +1,36 @@
+var router = require('express').Router();
+var User = require('../models/user');
+
+router.get('/signup', function(req, res, next){
+	res.render('accounts/signup', {
+		errors: req.flash('errors')
+	});
+});
+
+router.post('/signup', function(req, res, next){
+	var user = new User();
+	user.profile.name = req.body.name;
+	user.email = req.body.email;
+	user.password = req.body.password;
+
+	//validation
+	//findONe - When executed, the first found document is passed to the callback.
+	User.findOne({ email: req.body.email }, function(err, existingUser){
+		if(err) return next(err);
+
+		if(existingUser){
+			req.flash('errors', 'Account with that email address already exists');	
+			return res.redirect('/signup');
+		} else {
+			// user - saved user
+			user.save(function(err, user){
+				if(err) return next(err);
+				return res.redirect('/');
+			});
+		}
+
+	});
+
+});
+
+module.exports = router;
