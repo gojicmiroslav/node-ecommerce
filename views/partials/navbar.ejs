@@ -10,21 +10,16 @@
       <a class="navbar-brand" href="/">Ecommerce</a>
     </div>
 
-    <form class="navbar-form navbar-left" method="post" action="/search">
-      <div class="form-group">
-        <input type="text" name="q" class="form-control" placeholder="Search..." />
-        <button type="submit" class="btn btn-default" >Submit</button>
-      </div>
-    </form>
-
     <ul class="nav navbar-nav navbar-right">
       <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">Categories<span class="caret"></span></a>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">Categories<span class="caret"></span></a>
 
-          <ul class="dropdown-menu">           
-            <li><a href="#">Product</a></li>            
-          </ul>
-        </li>
+        <ul class="dropdown-menu">           
+          <li><a href="#">Product</a></li>            
+        </ul>
+      </li>
+      
+      <% if (!user) { %>
         
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false">Signup / Login <span class="caret"></span></a>
@@ -34,6 +29,19 @@
             <li><a href="/login">Login</a></li>  
           </ul>
         </li>
+
+      <% } else { %>  
+
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true" aria-expanded="false"><%= user.profile.name %></span></a>
+
+          <ul class="dropdown-menu">
+            <li><a href="/profile">Profile</a></li>  
+            <li><a href="/logout">Logout</a></li>  
+          </ul>
+        </li>
+
+      <% } %> 
     </ul> 
   </div>
 </nav>

@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
+var crypto = require('crypto');
 var Schema = mongoose.Schema;
 
 /* The user schema attributes */
@@ -46,6 +47,14 @@ UserSchema.methods.comparePassword = function(password){
 	// compareSync(data, encrypted) - data(data to compare), encrypted(data to be compare to)
 	return bcrypt.compareSync(password, this.password);
 };
+
+UserSchema.methods.gravatar = function(size){
+	if(!this.size) size = 200; 
+	// if not email, return random image
+	if(!this.email) return 'https://gravatar.com/avatar/?s' + size + '&d=retro';
+	var md5 = crypto.createHash('md5').update(this.email).digest('hex');
+	return 'https://gravatar.com/avatar/' + md5 + '?s' + size + '&d=retro';
+}
 
 // To use schema definition, we need to convert UserSchema into a Model we can work with. 
 // To do so, we pass it into mongoose.model(modelName, schema):

@@ -39,6 +39,7 @@ router.post('/signup', function(req, res, next){
 	user.profile.name = req.body.name;
 	user.email = req.body.email;
 	user.password = req.body.password;
+	user.profile.picture = user.gravatar();
 
 	//validation
 	//findONe - When executed, the first found document is passed to the callback.
@@ -52,12 +53,22 @@ router.post('/signup', function(req, res, next){
 			// user - saved user
 			user.save(function(err, user){
 				if(err) return next(err);
-				return res.redirect('/');
+				
+				// req.logIn - passport function, adding session to the server and cookie to the browser
+				req.logIn(user, function(err){
+					if(err) return next(err);
+					res.redirect('/profile');
+				});
 			});
 		}
 
 	});
 
+});
+
+router.get('/logout', function(req, res, next){
+	req.logout();
+	res.redirect('/');
 });
 
 module.exports = router;

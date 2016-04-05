@@ -38,6 +38,12 @@ app.use(session({
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+//declaring middleware to use object in every routes
+app.use(function(req, res, next){
+	// now every routes has user object by default
+	res.locals.user = req.user;
+	next();
+});
 
 // Engine
 app.engine('ejs', engine);
