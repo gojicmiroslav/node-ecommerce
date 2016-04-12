@@ -13,6 +13,8 @@ var passport = require('passport');
 
 var User = require('./models/user');
 var secret = require('./config/secret');
+var Category = require('./models/category');
+
 var port = process.env.PORT || 3000;
 
 mongoose.connect(secret.database, function(err){
@@ -45,6 +47,15 @@ app.use(function(req, res, next){
 	next();
 });
 
+app.use(function(req, res, next){
+	// {} - search for everything
+	Category.find({}, function(err, categories){
+		if(err) return next(err);
+		res.locals.categories = categories;
+		next();
+	});
+});
+
 // Engine
 app.engine('ejs', engine);
 app.set('view engine', 'ejs'); 
@@ -52,8 +63,10 @@ app.set('view engine', 'ejs');
 //Route
 var mainRoutes = require('./routes/main');
 var userRoutes = require('./routes/user');
+var adminRoutes = require('./routes/admin');
 app.use(mainRoutes);
 app.use(userRoutes);
+app.use(adminRoutes);
 
 
 app.listen(port, function(err){
