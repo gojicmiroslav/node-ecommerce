@@ -16,7 +16,7 @@
 
         <ul class="dropdown-menu">           
           <% categories.forEach(function(category){ %>
-            <li><a href="#"><%= category.name %></a></li>                          
+            <li><a href="/products/<%= category._id %>"><%= category.name %></a></li>                          
           <% }); %>
         </ul>
       </li>
