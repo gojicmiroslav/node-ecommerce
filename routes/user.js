@@ -2,6 +2,8 @@ var router = require('express').Router();
 var User = require('../models/user');
 var passport = require('passport');
 var passportConfig = require('../config/passport');
+var async = require('async');
+var Cart = require("../models/cart");
 
 router.get('/login', function(req, res){
 	// if user is already logged in
@@ -35,35 +37,42 @@ router.get('/signup', function(req, res, next){
 });
 
 router.post('/signup', function(req, res, next){
-	var user = new User();
-	user.profile.name = req.body.name;
-	user.email = req.body.email;
-	user.password = req.body.password;
-	user.profile.picture = user.gravatar();
+	async.waterfall([
+		function(callback){
+			var user = new User();
+			user.profile.name = req.body.name;
+			user.email = req.body.email;
+			user.password = req.body.password;
+			user.profile.picture = user.gravatar();
 
-	//validation
-	//findONe - When executed, the first found document is passed to the callback.
-	User.findOne({ email: req.body.email }, function(err, existingUser){
-		if(err) return next(err);
+			User.findOne({ email: req.body.email }, function(err, existingUser){
+				if(err) return next(err);	
+				if(existingUser){
+					req.flash('errors', 'Account with that email address already exists');
+          return res.redirect('/signup');
+				} else {
+					user.save(function(err, user) {
+            if (err) return next(err);
+            // user - saved user
+            callback(null, user);
+          });
+				}
+			});
+		},
 
-		if(existingUser){
-			req.flash('errors', 'Account with that email address already exists');	
-			return res.redirect('/signup');
-		} else {
-			// user - saved user
-			user.save(function(err, user){
+		function(user){
+			var cart = new Cart();
+			cart.owner = user._id;
+			cart.save(function(err){
 				if(err) return next(err);
-				
 				// req.logIn - passport function, adding session to the server and cookie to the browser
-				req.logIn(user, function(err){
-					if(err) return next(err);
-					res.redirect('/profile');
-				});
+				req.logIn(user, function(err) {
+          if (err) return next(err);
+          res.redirect('/profile');
+        });
 			});
 		}
-
-	});
-
+	]);
 });
 
 router.get('/logout', function(req, res, next){
