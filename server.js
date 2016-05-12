@@ -15,6 +15,8 @@ var User = require('./models/user');
 var secret = require('./config/secret');
 var Category = require('./models/category');
 
+var cartLength = require('./middlewares/middleware');
+
 var port = process.env.PORT || 3000;
 
 mongoose.connect(secret.database, function(err){
@@ -46,6 +48,8 @@ app.use(function(req, res, next){
 	res.locals.user = req.user;
 	next();
 });
+
+app.use(cartLength);
 
 app.use(function(req, res, next){
 	// {} - search for everything
