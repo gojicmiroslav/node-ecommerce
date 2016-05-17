@@ -42,4 +42,41 @@ $(function(){
 		});
 	});
 
+	$("#plus").on("click", function(){
+		var product_price = parseFloat($("#product_price").html());
+		var totalPrice = parseFloat($("#total").html());
+		var quantity = parseInt($("#count").html());
+		
+		totalPrice += product_price;
+		quantity++;
+
+		$("#count").html(quantity);
+		$("#total").html(totalPrice.toFixed(2));
+
+		//hidden fields
+		$("#quantity").val(quantity);
+		$("#totalPrice").val(totalPrice);
+	});
+
+	$("#minus").on("click", function(){
+		var quantity = parseInt($("#count").html());
+		if(quantity <= 1){
+			return;
+		}
+
+		var product_price = parseFloat($("#product_price").html());
+		var totalPrice = parseFloat($("#total").html());
+		var quantity = parseInt($("#count").html());
+
+		totalPrice -= product_price;
+		quantity--;
+
+		$("#count").html(quantity);
+		$("#total").html(totalPrice.toFixed(2));
+
+		//hidden fields
+		$("#quantity").val(quantity);
+		$("#totalPrice").val(totalPrice);
+	});
+
 });

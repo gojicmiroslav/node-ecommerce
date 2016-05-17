@@ -1,5 +1,6 @@
 var router = require('express').Router();
 var Product = require('../models/product');
+var Cart = require('../models/cart');
 
 // creating bridge between DB and Elasticsearch replica set
 Product.createMapping(function(err, mapping){
@@ -14,19 +15,6 @@ Product.createMapping(function(err, mapping){
 
 var stream = Product.synchronize();
 var count = 0;
-
-// count documents
-stream.on('data', function(){
-	count++;
-});
-
-stream.on('close', function(){
-	console.log("Indexed " + count + " documents");
-});
-
-stream.on('error', function(err){
-	console.log(err);
-});
 
 function paginate(req, res, next){
 	var perPage = 9; // number of items per page
@@ -54,6 +42,67 @@ function paginate(req, res, next){
 			});
 		});
 }
+
+// count documents
+stream.on('data', function(){
+	count++;
+});
+
+stream.on('close', function(){
+	console.log("Indexed " + count + " documents");
+});
+
+stream.on('error', function(err){
+	console.log(err);
+});
+
+router.get('/cart', function(req, res, next){
+	Cart
+		.findOne({ owner: req.user._id })
+		.populate('items.item')
+		.exec(function(err, foundCart){
+			if(err) return next(err);
+			console.log("Found cart: " + foundCart);
+
+			res.render('main/cart', {
+				foundCart: foundCart,
+				message: req.flash('remove')
+			});
+		});
+});
+
+router.post('/product/:product_id', function(req, res, next){
+	Cart.findOne({ owner: req.user._id }, function(err, cart){
+		if(err) return next(err);
+
+		cart.items.push({
+			item: req.body.product_id,
+			quantity: parseInt(req.body.quantity),
+			price: parseFloat(req.body.totalPrice)
+		});
+
+		cart.total = (cart.total + parseFloat(req.body.totalPrice)).toFixed(2);
+
+		cart.save(function(err, cart){
+			if(err) return next(err);
+			res.redirect('/cart');
+		});
+	});
+});
+
+router.post('/remove', function(req, res, next){
+	Cart.findOne({ owner: req.user._id }, function(err, foundCart){
+		// MongooseArray#pull - alias of remove
+		foundCart.items.pull(String(req.body.item));
+
+		foundCart.total = (foundCart.total - parseFloat(req.body.price)).toFixed(2);
+		foundCart.save(function(err){
+			if(err) return next(err);
+			req.flash('remove', 'Successfully removed');
+			res.redirect('/cart');
+		});
+	});
+});
 
 router.post('/search', function(req, res, next){
 	res.redirect('/search?q=' + req.body.q);
