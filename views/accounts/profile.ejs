@@ -36,7 +36,14 @@
 					</tr>
 				</thead>
 
-				
+				<tbody>
+					<% for(var i = 0; i < user.history.length; i++) { %>
+						<tr>
+							<td><%= user.history[i].item.name %></td>
+							<td><%= user.history[i].paid %></td>
+						</tr>
+					<% } %>
+				</tbody>
 			</table>
 		</div>
 	</div>

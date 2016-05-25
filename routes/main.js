@@ -131,6 +131,7 @@ router.get('/search', function(req, res, next){
 
 
 router.get('/', function(req, res, next){
+	console.log("Req User: " + req.user);
 	if(req.user){
 		paginate(req, res, next);
 	} else {
